@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The Excel Engineers E with its speed lines, on a white tile so it shows on light and dark tab bars. -->
+  <rect width="64" height="64" rx="14" fill="#ffffff"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none" stroke="#0b2a8a" stroke-opacity="0.18"/>
+  <svg x="6" y="9" width="52" height="46" viewBox="66 2 150 100">
+    <g fill="#9aa3ad"><path d="M6 13h118l-3 8H40z"/><path d="M30 42h100l-3 8H64z"/><path d="M0 71h124l-3 8H34z"/></g>
+    <path fill="#0b2a8a" transform="matrix(1 0 -0.21 1 20 0)" d="M128 8h72l-4 17h-48v19h40l-4 16h-36v19h52l-4 17h-68z"/>
+  </svg>
+</svg>

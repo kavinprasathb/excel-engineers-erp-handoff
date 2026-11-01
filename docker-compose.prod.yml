@@ -1,0 +1,79 @@
+# Production stack for /opt/excel-erp on the Hostinger VPS.
+#
+# That box already runs metricsgo, analyst-agent, analytics-agent, mirra and
+# n8n behind a host nginx. So this stack binds nothing publicly: the API is
+# published on loopback only and nginx terminates TLS in front of it. A
+# container grabbing :80/:443 would take the whole server down.
+#
+# Secrets come from /opt/excel-erp/.env, which is never in git.
+#
+# Build contexts are ./src/... because deploy.sh copies this file up to
+# /opt/excel-erp and runs compose from there, while the checkout lives in
+# /opt/excel-erp/src.
+name: excel-erp
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      # Loopback only. There is no firewall on this host, so the bind address
+      # is the thing keeping Postgres off the internet.
+      - "127.0.0.1:5442:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # One-shot. deploy.sh runs it to completion before starting the API, so a
+  # failed migration stops the deploy instead of surfacing as runtime 500s.
+  migrate:
+    profiles: [tools]
+    build:
+      context: ./src/backend
+    command: alembic upgrade head
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ./src/backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_FULL_NAME: ${ADMIN_FULL_NAME:-Admin}
+      # Empty on purpose: nginx serves the SPA and the API on one origin, so
+      # there is no cross-origin request to allow.
+      CORS_ORIGINS: ""
+    ports:
+      - "127.0.0.1:3300:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  pg_data:
+    # Named so `docker compose down -v` is the only way to lose it, and the
+    # runbook calls that command forbidden.
+    name: excel-erp_pg_data
+    external: true

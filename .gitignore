@@ -1,0 +1,47 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# node
+node_modules/
+dist/
+.vite/
+coverage/
+
+# env — never commit real secrets
+.env
+.env.*
+!.env.example
+
+# local databases
+*.db
+*.sqlite3
+
+# backups
+backups/*.dump
+backups/
+
+# keys / certs
+*.pem
+*.key
+
+# editors / os
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# claude local settings (may contain approved commands with secrets)
+.claude/settings.local.json
+screenshots/
+
+# Rendered PDFs written by the quotation-PDF tests. Inspecting them by eye is
+# part of the workflow (a PDF that passes assertions can still look wrong), so
+# they are produced deliberately — but they are output, not source.
+backend/tests/output/

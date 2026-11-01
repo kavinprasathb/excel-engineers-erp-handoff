@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/* Design tokens, ported from MetricsGo v2.
+   Warm neutrals, not gray. Every utility resolves through a CSS variable, so
+   dark mode needs zero `dark:` classes anywhere in the app — we flip the
+   variables on <html data-theme> instead. */
+
+:root {
+  --bg: #f5f5f5;
+  --card: #ffffff;
+  --border: #ebebeb;
+  --hover: #f1f1f1;
+  --text: #171717;
+  --heading: #0f2a5c;
+  --nav-section: #5b6bd6;
+  --nav-idle: #334155;
+  --nav-active-bg: #eef1fe;
+  --nav-active-text: #3445c9;
+  --text-secondary: #737373;
+
+  /* Brand accent. MetricsGo's orange is its own identity; Excel Engineers gets
+     a deep industrial blue. Changing these two lines rebrands the whole app. */
+  --accent: #1e5eb8;
+  --accent-hover: #1a4f9c;
+
+  --dark-btn: #171717;
+  --dark-btn-hover: #000000;
+  --dark-btn-text: #ffffff;
+
+  --purple: #8b5cf6;
+  --green: #16a34a;
+  --green-bg: #e8f7ee;
+  --red: #dc2626;
+  --red-bg: #fdecec;
+  --amber: #a16207;
+  --amber-bg: #fdf3e0;
+  --logo: #0b3a8c;
+  --logo-2: #0b2d6b;
+  --chart-track: #e7e9ee;
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f10;
+  --card: #18181a;
+  --border: #28282b;
+  --hover: #222225;
+  --text: #f4f4f5;
+  --heading: #dbe5ff;
+  --nav-section: #8f9cf0;
+  --nav-idle: #c4c9d4;
+  --nav-active-bg: #262c4a;
+  --nav-active-text: #c7cffd;
+  --text-secondary: #9d9da6;
+
+  --accent: #4b8ee0;
+  --accent-hover: #6ba2e8;
+
+  --dark-btn: #f4f4f5;
+  --dark-btn-hover: #ffffff;
+  --dark-btn-text: #111113;
+
+  --purple: #a78bfa;
+  --green: #4ade80;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --green-bg: #12291b;
+  --red-bg: #331416;
+  --amber-bg: #33270f;
+  --logo: #8fbaff;
+  --logo-2: #cfe2ff;
+  --chart-track: #34343a;
+}
+
+/* Short semantic aliases — `ink`, `line`, `card`, `brand` — used everywhere
+   instead of Tailwind's stock neutral and gray scales. Opacity modifiers work
+   on all of them: border-line/60, text-ink-2/70, bg-red-bg/40.
+
+   Do not write a star followed by a slash anywhere in these comments: it ends
+   the comment early and silently discards the @theme block below, which costs
+   the whole app its design tokens. */
+@theme inline {
+  --color-app-bg: var(--bg);
+  --color-card: var(--card);
+  --color-line: var(--border);
+  --color-hoverfill: var(--hover);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-secondary);
+  --color-heading: var(--heading);
+  --color-nav-section: var(--nav-section);
+  --color-nav-idle: var(--nav-idle);
+  --color-nav-active-bg: var(--nav-active-bg);
+  --color-nav-active-text: var(--nav-active-text);
+  --color-brand: var(--accent);
+  --color-brand-hover: var(--accent-hover);
+  --color-darkbtn: var(--dark-btn);
+  --color-darkbtn-hover: var(--dark-btn-hover);
+  --color-darkbtn-text: var(--dark-btn-text);
+  --color-purple: var(--purple);
+  --color-green: var(--green);
+  --color-green-bg: var(--green-bg);
+  --color-red: var(--red);
+  --color-red-bg: var(--red-bg);
+  --color-amber: var(--amber);
+  --color-amber-bg: var(--amber-bg);
+  --color-logo: var(--logo);
+  --color-logo-2: var(--logo-2);
+  --font-sans: "DM Sans Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Table heads everywhere: a soft grey band, plain sentence-case labels.
+   Set on th so it wins over the uppercase inherited from older table markup. */
+@layer base {
+  thead th {
+    background: var(--bg);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  thead th:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+  thead th:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+
+/* Headings and card titles in the display face; everything else stays Inter. */
+@layer base {
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; color: var(--heading); }
+}
+
+/* Sign-in page: navy blueprint panel, moving water, turning impeller. */
+.login-panel {
+  background:
+    radial-gradient(90% 70% at 30% 40%, rgba(47, 124, 246, 0.35), transparent 60%),
+    radial-gradient(60% 50% at 90% 100%, rgba(94, 224, 255, 0.14), transparent 70%),
+    linear-gradient(160deg, #0f2a5c 0%, #0a1d42 55%, #071431 100%);
+}
+.login-grid {
+  background-image:
+    linear-gradient(rgba(156, 196, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 196, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(156, 196, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 196, 255, 0.035) 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
+  mask-image: radial-gradient(80% 80% at 50% 45%, #000 40%, transparent 100%);
+}
+.ps-flow path { stroke-dasharray: 10 14; animation: ps-flow 1.4s linear infinite; }
+.ps-spin { animation: ps-spin 6s linear infinite; }
+@keyframes ps-flow { to { stroke-dashoffset: -24; } }
+@keyframes ps-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ps-flow path, .ps-spin { animation: none; }
+}
+
+/* The glass stage behind the pump drawing. */
+.login-stage {
+  background:
+    radial-gradient(70% 60% at 45% 55%, rgba(47, 124, 246, 0.28), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(156, 196, 255, 0.14),
+    0 40px 80px -30px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+}
+.login-rings {
+  position: absolute;
+  left: 40%;
+  top: 58%;
+  width: 720px;
+  height: 720px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, rgba(156, 196, 255, 0.09) 0 1px, transparent 1px 44px),
+    conic-gradient(from 200deg, transparent 0 70%, rgba(94, 224, 255, 0.18) 80%, transparent 90%);
+  mask-image: radial-gradient(circle, #000 25%, transparent 68%);
+}
+.login-sheen {
+  position: absolute;
+  inset: -40% auto auto -20%;
+  width: 70%;
+  height: 120%;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+}
+.login-tag {
+  background: rgba(10, 29, 66, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(156, 196, 255, 0.2), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .login-rings { animation: login-sweep 14s linear infinite; }
+}
+@keyframes login-sweep { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* The logo has a navy and a white version; show the one that reads on the theme. */
+.logo-on-dark {
+  display: none;
+}
+[data-theme="dark"] .logo-on-light {
+  display: none;
+}
+[data-theme="dark"] .logo-on-dark {
+  display: block;
+}
