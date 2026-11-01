@@ -45,3 +45,6 @@ screenshots/
 # part of the workflow (a PDF that passes assertions can still look wrong), so
 # they are produced deliberately — but they are output, not source.
 backend/tests/output/
+
+# decrypted handoff data
+*.dump

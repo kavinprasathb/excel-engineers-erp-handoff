@@ -73,10 +73,44 @@ won't stick. Log in with `ADMIN_EMAIL` / `ADMIN_PASSWORD` from `backend/.env`; t
 admin is created on startup.
 Health check: http://localhost:5173/api/health should show `"db":"ok"`.
 
-Optional sample data: `cd backend && uv run python -m scripts.seed_sample_data`.
+### Loading the live data
 
-The local database starts empty. Live data is **not** in the repo. If you need a copy,
-ask the project owner for a sanitised dump.
+`data/excel-live-2026-11-01.dump.enc` is the live database as of 1 Nov 2026, encrypted.
+It holds:
+- 636 products, 5 suppliers, 101 customers, 9 branches and 1,450 past-offer items
+- 2 quotations
+- migration head `b2d6f8a1c3e5`
+
+**The password comes from the project owner privately.** Never commit the decrypted file.
+
+Load it into the `excel` database **instead of** running `alembic upgrade head` on an
+empty one:
+
+```bash
+# 1. decrypt (openssl ships with Git Bash, macOS and Linux)
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+  -in data/excel-live-2026-11-01.dump.enc -out excel-live.dump   # asks for the password
+
+# 2. restore into a fresh database (stop the API first)
+psql -h localhost -U excel -d postgres -c "DROP DATABASE IF EXISTS excel WITH (FORCE)" -c "CREATE DATABASE excel"
+psql -h localhost -U excel -d excel -c "CREATE EXTENSION IF NOT EXISTS pg_trgm"
+pg_restore -h localhost -U excel -d excel --no-owner --no-privileges excel-live.dump
+# one error about the pg_trgm extension or its comment is expected and harmless
+
+# 3. bring it up to the code's latest migration (a no-op if already current)
+cd backend && uv run alembic upgrade head
+```
+
+Login passwords were **removed** from this copy. Set the admin's password once, then
+log in as `admin@excelengineers.in` with it:
+
+```bash
+cd backend && uv run python -c "from app.db import SessionLocal; from app.models import User; from app.security import hash_password; db=SessionLocal(); u=db.query(User).filter_by(email='admin@excelengineers.in').one(); u.password_hash=hash_password('choose-a-local-password'); db.commit(); print('ok')"
+```
+
+Delete `excel-live.dump` once it's loaded. It contains customer contact details.
+
+Optional, for an empty database instead: `cd backend && uv run python -m scripts.seed_sample_data`.
 
 ## 5. Checks (run all before handing work back)
 
